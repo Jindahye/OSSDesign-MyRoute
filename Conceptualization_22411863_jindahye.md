@@ -21,7 +21,7 @@ Conceptualization
 Revision date|Version #|Description|Author
 ---|---|---|---
 2025/03/21 | 0.1 | 초안 작성 완료 | 진다혜
-2025/03/24 | 0.2 | use case 수정 | 진다혜
+2025/03/23 | 0.2 | use case 수정 | 진다혜
 2025/03/25 | 1.0| 오타 수정 및 최종 검토 | 진다혜
 
 
@@ -102,6 +102,7 @@ Revision date|Version #|Description|Author
 ## 3. Use case list
 ### 1) 로그인 (Login)
 | Actor | User, Auth Service, Database |
+|---|---|
 | Description | 사용자가 자신의 아이디로 로그인한다. |
 
 ### 2) 계정 관리 (Account Management)
