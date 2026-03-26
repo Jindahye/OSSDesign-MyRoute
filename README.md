@@ -1,1 +1,0 @@
-# OSSDesign-StepGuide
