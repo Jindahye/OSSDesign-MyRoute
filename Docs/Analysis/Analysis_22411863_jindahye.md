@@ -64,7 +64,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">Auth Service</td></tr>
@@ -104,7 +104,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">Auth Service</td></tr>
@@ -114,7 +114,7 @@ Revision date|Version #|Description|Author
     <tr><td>Failed Post Condition</td><td colspan="2">회원가입이 취소되고 초기 화면으로 복귀한다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 SNS 인증을 완료한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 SNS 인증을 시도한다.</td></tr>
     <tr><td style="text-align:center;">2</td><td colspan="2">System이 미등록 사용자임을 확인한다.</td></tr>
     <tr><td style="text-align:center;">3</td><td colspan="2">System이 약관 동의 화면을 표시한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">사용자가 약관에 동의한다.</td></tr>
@@ -143,7 +143,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">없음</td></tr>
@@ -180,7 +180,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">External Map API, Public Data</td></tr>
@@ -220,7 +220,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">External Map API, Public Data</td></tr>
@@ -260,7 +260,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">Subfunction Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">System</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">Public Data</td></tr>
@@ -295,7 +295,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">External Map API</td></tr>
@@ -339,7 +339,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">Public Data</td></tr>
@@ -379,7 +379,7 @@ Revision date|Version #|Description|Author
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
-    <tr><td>Last Update</td><td colspan="2">2026-04-30</td></tr>
+    <tr><td>Last Update</td><td colspan="2">2026-05-05</td></tr>
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">없음</td></tr>
@@ -407,9 +407,22 @@ Revision date|Version #|Description|Author
   </tbody>
 </table>
 
-
+<br>
+<br>
 
 ## 3. Domain Analysis
+Class|Description
+---|---
+User | 서비스에 가입한 사용자이다. 카카오 OAuth 등의 SNS 인증을 통해 식별되며 자신의 프로필, 보행 로그, 제보 내역 등을 관리한다.
+UserPreference|사용자의 보행 특성 및 이동 제약 사항 등을 관리한다. 계단, 경사로 등이 포함되며 안전 경로 추천 시 가중치로 활용된다.
+Route|목적지까지의 이동 경로 정보를 담는다. 지도의 데이터와 시스템의 안전 필터가 결합된 최종 결과물이다. 실제 이동 경로가 아닌 추천 경로이다.
+RouteSegment|전체 경로를 구성하는 단위 도로 구간이다. 각 구간의 경사도나 노면 상태 등 물리적 데이터를 안전 필터 로직과 대조하는 최소 단위가 된다.
+SafetyData|공공 데이터로부터 수집한 도로의 객관적인 환경 정보이다. 특정 구간의 경사도, 장애물 유무 등 UserPreference와 비교될 데이터이다.
+WalkingLog|보행 완료 후 생성되는 활동 통계이다. 이동 거리와 소요 시간 등을 계산하여 사용자의 과거 이력으로 저장하며 실제 이동 궤적을 기록한다.
+GPSPoint|보행 중 실시간으로 수집되는 위도와 경도 데이터이다. 시간 순으로 연결되어 WalkingLog의 구체적인 이동 궤적을 형성한다.
+Facility|지도상에 표시되는 편의 시설 정보이다. 보행 약자에게 필요한 시설의 카테고리와 위치를 분류하여 제공한다.
+Report|사용자가 직접 제보한 도로 현황 데이터이다. 실제 도로 상황과 시스템 데이터 간의 차이를 보완하는 역할을 수행한다.
+Location|시스템 전반에서 재사용되는 위치 정보 클래스이다. 좌표값 처리 기능을 캡슐화하여 위경도 정보를 일관되게 관리한다.
 
 <br>
 <br>
