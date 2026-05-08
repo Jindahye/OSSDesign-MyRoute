@@ -48,16 +48,18 @@ Revision date|Version #|Description|Author
 ## 1. Introduction
 
 ### 1.1 Summary
-본 문서는 사용자 맞춤형 보행 안전 내비게이션 서비스인 MyRoute의 요구사항 분석 및 시스템 설계를 기술한 상세 보고서이다. MyRoute는 보행 약자의 이동권 증진과 보행자의 안전한 산책 환경을 보장하기 위해 기획된 보행 전용 내비게이션 및 활동 기록 서비스이다.
+본 문서는 사용자 맞춤형 보행 안전 경로 추천 서비스인 MyRoute의 요구사항 분석 및 시스템 설계를 기술한 상세 보고서이다. MyRoute는 보행 약자의 이동권 증진과 보행자의 안전한 산책 환경을 보장하기 위해 기획된 보행 전용 내비게이션 및 활동 기록 서비스이다.
 
 본 서비스는 사용자의 현재 상황(휠체어, 유아차 사용 등)이나 선호도(경사도 기피, 조명이 밝은 길 등)를 입력받아 이를 경로 산출에 반영한다. 본 보고서는 이러한 기획 의도를 바탕으로 유스케이스 및 도메인을 분석하고, UI 프로토타입을 설명한다.
 
 ### 1.2 Conceptualization 문서 대비 변경 사항
 초기 기획 이후, 분석 단계를 거치며 시스템의 전문성과 실현 가능성을 높이기 위해 다음과 같이 변경 및 고도화 작업을 수행하였다.
 
-* **추천 방식의 구체화** 초기 기획 단계에서 정의했던 AI 최적 경로 추천이라는 추상적인 명칭을 분석 단계에서는 결정적 데이터 필터링 및 가중치 기반 추천으로 변경 및 구체화하였다.
+* **추천 방식의 구체화** <br>
+초기 기획 단계에서 정의했던 AI 최적 경로 추천이라는 추상적인 명칭을 분석 단계에서는 결정적 데이터 필터링 및 가중치 기반 추천으로 변경 및 구체화하였다.
 
-* **기능적 구조의 계층화 (UC #5, #6 분리)** 기획 단계의 단일 추천 기능을 분석 단계에서는 '안전 경로 추천(UC #5)'과 이를 지원하는 '안전 필터 적용(UC #6)'이라는 하위 기능으로 분리하였다. 이는 알고리즘의 연산 과정을 세분화하여 시스템의 설계 구조를 명확히 하기 위함이다.
+* **기능적 구조의 계층화 (UC #5, #6 분리)** <br>
+기획 단계의 단일 추천 기능을 분석 단계에서는 '안전 경로 추천(UC #5)'과 이를 지원하는 '안전 필터 적용(UC #6)'이라는 하위 기능으로 분리하였다. 이는 알고리즘의 연산 과정을 세분화하여 시스템의 설계 구조를 명확히 하기 위함이다.
 
 ### 1.3 프로젝트의 주요 특징 (Prominent Features)
 
@@ -65,7 +67,7 @@ Revision date|Version #|Description|Author
 단순 최단 거리 탐색에서 벗어나 사용자의 신체 조건(휠체어, 유아차 등)과 보행 환경 선호도를 결합한 '안전 경로'를 제공함으로써 교통 약자의 실질적인 이동 편의를 증진한다.
 
 #### 2) 의의 (Significance)
-파편화된 공공 데이터와 실시간 사용자 제보(Crowdsourcing)를 결합하여 사회적 보행 안전망을 구축하고, 누구나 제약 없이 이동할 수 있는 배리어 프리(Barrier-free) 가치를 실현한다.
+공공 데이터와 사용자 제보를 결합하여 사회적 보행 안전망을 구축하고 누구나 제약 없이 이동할 수 있는 배리어 프리 가치를 실현한다.
 
 #### 3) 확장성 (Expandability)
 수집된 보행 위험 데이터는 향후 지자체의 도로 정비 우선순위 결정의 기초 자료로 활용될 수 있으며, 러닝/등산 등 다양한 야간 야외 활동 서비스로 모델 확장이 용이하다.
@@ -163,7 +165,7 @@ Revision date|Version #|Description|Author
   <thead><tr><th colspan="3" style="text-align:center;">Use case #3 : 프로필 관리 (Manage Profile)</th></tr></thead>
   <tbody>
     <tr><td colspan="3"><b>GENERAL CHARACTERISTICS</b></td></tr>
-    <tr><td width="25%">Summary</td><td colspan="2">사용자가 보행 선호도와 이동 제약 사항을 등록·수정한다.</td></tr>
+    <tr><td width="25%">Summary</td><td colspan="2">사용자가 프로필 정보, 보행 선호도와 이동 제약 사항 등을 등록·수정한다.</td></tr>
     <tr><td>Scope</td><td colspan="2">MyRoute</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
@@ -177,16 +179,16 @@ Revision date|Version #|Description|Author
     <tr><td>Failed Post Condition</td><td colspan="2">변경 사항이 저장되지 않고 이전 상태가 유지된다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 마이페이지에서 프로필 수정을 선택한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 마이페이지에서 각 정보의 수정을 선택한다.</td></tr>
     <tr><td style="text-align:center;">2</td><td colspan="2">System이 현재 프로필 정보를 표시한다.</td></tr>
-    <tr><td style="text-align:center;">3</td><td colspan="2">사용자가 항목(휠체어/유아차/반려동물 동반 등)을 선택 또는 해제한다.</td></tr>
+    <tr><td style="text-align:center;">3</td><td colspan="2">사용자가 정보를 변경한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">사용자가 저장을 요청한다.</td></tr>
     <tr><td style="text-align:center;">5</td><td colspan="2">System이 변경 사항을 DB에 저장한다.</td></tr>
     <tr><td style="text-align:center;">6</td><td colspan="2">System이 저장 완료 메시지를 표시한다.</td></tr>
     <tr><td colspan="3"><b>EXTENSION SCENARIOS</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Branching Action</td></tr>
     <tr><td rowspan="2" style="text-align:center;">5</td><td colspan="2">5a. DB 저장에 실패한 경우</td></tr>
-    <tr><td colspan="2">5a.1. System이 오류 메시지를 출력하고 변경 사항을 화면에 유지한 채 재시도 버튼을 제공한다.</td></tr>
+    <tr><td colspan="2">5a.1. System이 오류 메시지를 출력하고 변경 사항을 화면에 유지한 채 재시도할 수 있도록 한다.</td></tr>
     <tr><td colspan="3"><b>RELATED INFORMATION</b></td></tr>
     <tr><td>Performance</td><td colspan="2">≤ 3 Seconds</td></tr>
     <tr><td>Frequency</td><td colspan="2">Low</td></tr>
@@ -248,14 +250,14 @@ Revision date|Version #|Description|Author
     <tr><td>Status</td><td colspan="2">Analysis</td></tr>
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">External Map API, Public Data</td></tr>
-    <tr><td>Preconditions</td><td colspan="2">사용자가 로그인 상태이고 출발지·목적지가 지정되어 있다.</td></tr>
-    <tr><td>Trigger</td><td colspan="2">사용자가 "경로 검색"을 선택한다.</td></tr>
+    <tr><td>Preconditions</td><td colspan="2">사용자가 로그인 상태이다.</td></tr>
+    <tr><td>Trigger</td><td colspan="2">사용자가 "추천 경로 찾기"을 선택한다.</td></tr>
     <tr><td>Success Post Condition</td><td colspan="2">위험 구간이 시각적으로 표시된 추천 경로가 사용자에게 제시된다.</td></tr>
     <tr><td>Failed Post Condition</td><td colspan="2">추천 경로가 표시되지 않고 오류 메시지가 출력된다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 출발지와 목적지를 입력한다.</td></tr>
-    <tr><td style="text-align:center;">2</td><td colspan="2">사용자가 "경로 검색"을 선택한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 "추천 경로 찾기"을 선택한다.</td></tr>
+    <tr><td style="text-align:center;">2</td><td colspan="2">사용자가 출발지와 목적지를 입력한다.</td></tr>
     <tr><td style="text-align:center;">3</td><td colspan="2">System이 External Map API에 경로 데이터를 요청한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">External Map API가 후보 경로를 반환한다.</td></tr>
     <tr><td style="text-align:center;">5</td><td colspan="2">System이 안전 필터 적용(UC #6)을 호출한다.</td></tr>
@@ -324,12 +326,12 @@ Revision date|Version #|Description|Author
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">External Map API</td></tr>
     <tr><td>Preconditions</td><td colspan="2">사용자가 로그인 상태이고 위치 권한이 허용되어 있다.</td></tr>
-    <tr><td>Trigger</td><td colspan="2">사용자가 "보행 시작"을 선택한다.</td></tr>
+    <tr><td>Trigger</td><td colspan="2">사용자가 "산책 시작"을 선택한다.</td></tr>
     <tr><td>Success Post Condition</td><td colspan="2">보행 로그가 DB에 저장되고 종료 요약 화면이 표시된다.</td></tr>
     <tr><td>Failed Post Condition</td><td colspan="2">보행 로그가 저장되지 않거나 안내가 중단된다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 "보행 시작"을 선택한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 "산책 시작"을 선택한다.</td></tr>
     <tr><td style="text-align:center;">2</td><td colspan="2">System이 GPS 추적을 시작한다.</td></tr>
     <tr><td style="text-align:center;">3</td><td colspan="2">System이 현재 위치를 지도에 실시간 표시한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">System이 일정 주기로 GPS 좌표를 로그에 누적한다.</td></tr>
@@ -368,12 +370,12 @@ Revision date|Version #|Description|Author
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">Public Data</td></tr>
     <tr><td>Preconditions</td><td colspan="2">사용자가 로그인 상태이고 위치 권한이 허용되어 있다.</td></tr>
-    <tr><td>Trigger</td><td colspan="2">사용자가 "제보하기"를 선택한다.</td></tr>
+    <tr><td>Trigger</td><td colspan="2">사용자가 제보 버튼를 선택한다.</td></tr>
     <tr><td>Success Post Condition</td><td colspan="2">제보 내용이 DB에 저장되고 접수 완료 메시지가 표시된다.</td></tr>
     <tr><td>Failed Post Condition</td><td colspan="2">제보가 저장되지 않고 오류 메시지가 표시된다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 "제보하기"를 선택한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 제보 버튼을 선택한다.</td></tr>
     <tr><td style="text-align:center;">2</td><td colspan="2">System이 제보 양식을 표시한다.</td></tr>
     <tr><td style="text-align:center;">3</td><td colspan="2">사용자가 제보 유형(공사/장애물/시설 변경 등)과 설명을 입력한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">System이 사용자의 현재 위치를 자동 첨부한다.</td></tr>
@@ -408,14 +410,14 @@ Revision date|Version #|Description|Author
     <tr><td>Primary Actor</td><td colspan="2">User</td></tr>
     <tr><td>Secondary Actor</td><td colspan="2">없음</td></tr>
     <tr><td>Preconditions</td><td colspan="2">사용자가 로그인 상태이고 저장된 보행 로그가 1개 이상 존재한다.</td></tr>
-    <tr><td>Trigger</td><td colspan="2">사용자가 마이페이지에서 "활동 이력"을 선택한다.</td></tr>
+    <tr><td>Trigger</td><td colspan="2">사용자가 기록 탭을 선택한다.</td></tr>
     <tr><td>Success Post Condition</td><td colspan="2">사용자가 선택한 보행 기록의 상세 정보가 표시된다.</td></tr>
     <tr><td>Failed Post Condition</td><td colspan="2">이력 목록이 표시되지 않고 오류 또는 안내 메시지가 출력된다.</td></tr>
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
-    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 "활동 이력"을 선택한다.</td></tr>
+    <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 기록 탭을 선택한다.</td></tr>
     <tr><td style="text-align:center;">2</td><td colspan="2">System이 DB에서 사용자의 보행 로그 목록을 조회한다.</td></tr>
-    <tr><td style="text-align:center;">3</td><td colspan="2">System이 날짜순으로 정렬된 목록을 표시한다.</td></tr>
+    <tr><td style="text-align:center;">3</td><td colspan="2">System이 기록 목록을 표시한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">사용자가 특정 항목을 선택한다.</td></tr>
     <tr><td style="text-align:center;">5</td><td colspan="2">System이 해당 보행의 상세 정보(경로·거리·시간)를 표시한다.</td></tr>
     <tr><td colspan="3"><b>EXTENSION SCENARIOS</b></td></tr>
@@ -506,9 +508,10 @@ Location|시스템 전반에서 재사용되는 위치 정보 클래스이다. �
 ---|---
 **External Map API** | 지도 타일 렌더링 및 경로 탐색 로직을 제공하는 외부 인터페이스(카카오맵, 구글맵 등)이다.
 **Public Data (공공 데이터)** | 정부나 공공기관이 보유한 도로 경사도, 장애인 편의시설 위치 등 시스템의 안전 필터 구현을 위한 데이터이다.
+**배리어 프리** | 장애인, 고령자, 임산부 등 사회적 약자들이 일상생활에서 겪는 물리적·제도적·심리적 장벽을 허물기 위한 운동 및 설계 방식
 
 <br>
 <br>
 
 ## 6. References
-참고 앱: 삼성 헬스, Nike Rum Club
+참고 앱: 삼성 헬스, Nike Run Club
