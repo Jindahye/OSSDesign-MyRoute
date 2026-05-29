@@ -4,7 +4,7 @@ Conceptualization
 <br>
 <br>
 
-![MyRoute 로고](./MyRoute_logo.png)
+![MyRoute 로고](./images/MyRoute_logo.png)
 <br>
 <br>
 
@@ -51,10 +51,10 @@ Revision date|Version #|Description|Author
 현대 사회에서 산책은 건강 관리와 스트레스 해소를 위한 필수 활동이다. 문화체육관광부의 2025 국민생활체육조사에 따르면 주로 참여하는 체육활동 종목의 40.5%가 걷기, 17.1%가 등산, 7.7%가 달리기(조깅, 마라톤 포함), 5.8%가 자전거, 사이클, 산악자전거로 약 70% 이상이 야외 활동 중심의 운동이다(아래 [그림 1-1] 참조). 하지만 기존의 지도 서비스는 모든 사용자에게 최단 거리 위주의 경로만을 제공한다. <br> 
 또한 국토교통부의 교통약자 현황에 따르면 교통약자 인구는 매년 증가하고 있다. 2024년 기준 교통약자 인구는 약 1,612만 명으로 전체 인구의 31.5%를 차지하며, 국민 3명 중 1명이 이동에 제약을 느끼고 있는 상황이다(아래 [그림 1-2] 참조). 그러나 이들이 필요로 하는 경사로 유무, 계단 없는 길 등의 정밀한 정보는 파편화되어 있어 접근이 어렵다. 이에 각자의 요구사항에 맞는 경로를 추천하고 기록하여 관리할 수 있는 서비스를 구상했다. 이 서비스를 통해 휠체어, 유아차, 노인 등 교통약자를 위한 경로뿐만 아니라 도심, 공원, 강변 등 각자의 취향에 맞는 경로를 추천해주어 맞춤형 경로를 추천할 수 있도록 한다. 
 
-![국민생활체육조사 통계](./2025_participation_survey.png)
+![국민생활체육조사 통계](./images/2025_participation_survey.png)
 *[그림 1-1] 2025 국민생활체육조사 참여 종목 현황*
 
-![교통약자 현황 통계](./mobility_vulnerable_stats.png)
+![교통약자 현황 통계](./images/mobility_vulnerable_stats.png)
 *[그림 1-2] 연도별 총인구 대비 교통약자 현황 (2019-2024)*
 
 ### 1.2 Goal
@@ -78,8 +78,8 @@ Revision date|Version #|Description|Author
 ## 2. System Context Diagram
 
 ### 2.1 Diagram
-![System Context Diagram](./System_Context_Diagram.png)
-*[그림 2-1] System Context Diagram*
+![Context Diagram](./images/Context_Diagram.png)
+*[그림 2-1] Context Diagram*
 
 ### 2.2 Description of Terms in Diagram
 - MyRoute System: 경로 연산 및 데이터 통합.
@@ -88,11 +88,7 @@ Revision date|Version #|Description|Author
 
 - Auth Service: 로그인 인증 요청을 처리하고 보안 토큰을 발급하는 서비스.
 
-- Geographic Info: 지도 이미지와 장소(POI) 좌표 데이터를 제공하는 외부 API.
-
-- Database: 활동 기록을 저장(Save Activity)하고 과거 이력(Past Logs)을 불러오는 저장소입니다.
-
-- AI Recommendation Service: 사용자 취향을 분석해 맞춤형 경로를 추천하는 AI .
+- External Map API: 지도 이미지와 장소(POI) 좌표 데이터를 제공하는 외부 API.
 
 - Public Data: 경사로, 공원 등 공공 인프라 정보를 제공하는 데이터 소스.
 
@@ -101,139 +97,126 @@ Revision date|Version #|Description|Author
 
 ## 3. Use case list
 ### 1) 로그인 (Login)
+| Actor | User, Auth Service |
+|---|---|
+| Description | 사용자가 SNS 계정을 통해 시스템에 인증을 요청한다. |
+
+### 2) 회원가입 (Sign Up)
 | Actor | User, Auth Service, Database |
 |---|---|
-| Description | 사용자가 자신의 아이디로 로그인한다. |
+| Description | 최초 SNS 인증 시 미등록 사용자로 확인될 경우 진행된다. 약관 동의 후 기본 프로필을 생성하여 Database에 신규 등록함으로써 서비스 이용 권한을 획득한다. |
 
-### 2) 계정 관리 (Account Management)
-| Actor | User, Auth Service, Database |
-|---|---|
-| Description | 서비스 이용을 위한 회원가입, 정보 수정 및 회원 탈퇴를 수행한다. 사용자의 가입 정보를 Database에 신규 등록하거나 기존 데이터를 수정 및 삭제하여 개인정보를 관리한다. |
-
-### 3) 맞춤 프로필 설정 (Custom Profile Setting)
+### 3) 프로필 관리 (Manage Profile)
 | Actor | User, Database |
 |---|---|
-| Description | 사용자의 이동 제약 사항이나 보행 선호도 등을 설정한다. 입력된 프로필 데이터는 Database에 기록하여 추천에 활용한다. |
+| Description | 사용자의 기본 정보 및 보행 선호도, 이동 제약 사항(휠체어, 유아차, 반려동물 동반 등)을 등록하거나 수정한다. 이 데이터는 경로 산출 시 개인화된 가중치로 활용된다. |
 
-### 4) 시설 탐색 (Facility Search)
-| Actor | User, Public Data, Geographic Info |
+### 4) 시설 탐색 (Browse Facilities)
+| Actor | User, External Map API, Public Data |
 |---|---|
-| Description | 현재 위치 또는 목적지 주변의 편의 시설을 탐색한다. Geographic Info 상에 Public Data로부터 수집된 시설 위치 정보를 아이콘으로 띄워서 사용자에게 제공한다. |
+| Description | 현재 위치 주변의 교통약자 편의 시설 정보를 지도에서 확인한다. Map API의 지도 데이터 위에 Public Data로부터 수집된 시설 좌표를 아이콘 형태로 시각화하여 제공한다. |
 
-### 5) 최적 경로 추천 (Optimal Route Recommendation)
-| Actor | User, AI Recommendation Service, Geographic Info, Public Data |
+### 5) 안전 경로 추천 (Recommend Safe Route)
+| Actor | User, External Map API, Public Data |
 |---|---|
-| Description | 목적지까지의 최적 경로를 산출해서 추천한다. AI Recommendation Service가 사용자 프로필과 Public Data의 도로 정보(경사도, 노면 상태), Geographic Info의 지형 데이터를 종합 분석하여 가장 사용자에게 맞는 경로를 제안한다.|
+| Description | 목적지까지의 경로 중 보행 환경이 고려된 길을 제안한다. 외부 경로 데이터 위에 안전 필터를 적용하여 최적의 경로를 사용자에게 제시한다. |
 
-### 6) 실시간 경로 안내 및 주행 기록 (Navigation & Logging)
-| Actor | User, Geographic Info, Database |
+### 6) 안전 필터 적용 (Apply Safety Filter)
+| Actor | System (Internal), Public Data |
 |---|---|
-| Description | 목적지까지의 실시간으로 길을 안내한다. Geographic Info를 통해 사용자의 GPS 위치를 실시간 추적하여 안내하며, 이동 경로 및 주행 로그 데이터를 Database에 지속적으로 기록한다. |
+| Description | Public Data의 도로 환경 정보와 사용자 프로필을 대조하여 각 구간에 안전 점수를 부여하고 위험 구간을 마킹한다. |
 
-### 7) 이동 통계 및 리포트 확인 (Statistics & Report)
-| Actor | User, Database |
+### 7) 실시간 안내 및 로깅 (Walk & Log)
+| Actor | User, External Map API, Database |
 |---|---|
-| Description | 사용자의 과거 활동 내역을 분석하여 제공한다. Database에 저장된 주행 로그를 바탕으로 이동 거리, 시간, 건강 통계 리포트를 생성하여 사용자에게 보여준다. |
+| Description | 보행 중 실시간 위치를 지도에 표시하고 길을 안내한다. 이동 경로를 트래킹하며, 보행 종료 시 누적 거리, 시간 및 소모 칼로리 등를 계산하여 주행 로그를 저장한다. |
 
-### 8) 변경사항 제보 (Change Reporting)
+### 8) 변경사항 제보 (Report Change)
 | Actor | User, Database, Public Data |
 |---|---|
-| Description | 지도에 반영되지 않은 도로 위 장애물 정보나 서비스의 설명과 다른 사항들을 제보한다. 사용자가 입력한 제보 내용은 Database에 저장되며, 향후 Public Data의 한계를 보완하기 위해 활용될 수 있다.|
+| Description | 지도에 미반영된 공사 구간이나 장애물 등을 사용자가 현장에서 제보한다. |
 
-### 9) 활동 성과 및 배지 관리 (Achievement & Reward Management)
+### 9) 과거 이력 조회 (View Activity History)
 | Actor | User, Database |
 |---|---|
-| Description | 사용자의 활동량에 따른 보상을 관리한다. Database에 기록된 이동 거리나 제보 횟수가 특정 목표에 도달하면 디지털 배지를 부여하고 성과 지표를 갱신하여 사용자의 참여를 독려한다. |
-
-### 10) 경로 공유 (Favorites & Sharing)
-| | |
-|---|---|
-| Actor | User, Database |
-| Description | 선호하는 경로를 저장해서 바로 사용할 수 있도록하고 자신의 경로를 다른 사용자와 공유한다. 자주 가는 장소 및 경로 데이터를 Database에 저장하여 관리하며, 저장된 데이터를 기반으로 커뮤니티 내 공유 기능을 수행한다.
+| Description | 과거 보행 활동 기록을 목록 형태로 조회한다. 특정 로그 선택 시 이동 궤적, 거리, 시간, 건강 통계 등 상세 데이터를 Database로부터 호출하여 사용자에게 표시한다. |
 
 <br>
 <br>
 
 ## 4. Concept of operation
+
 ### 1) 로그인 (Login)
 | | |
 |---|---|
-| Purpose | 앱을 사용하기 위해 등록된 사용자인지 확인한다.|
-|Approach|사용자가 앱을 실행 후 로그인 시, ID, PW를 입력 후 로그인을 요청하면 서버에서 회원 정보를 조회 후 로그인 성공/실패 여부를 확인한다.|
-|Dynamics|앱 실행 시 로그인할 경우|
-|Goals|안전한 사용자 인증 및 개인 데이터 보안을 유지한다.|
+| **Purpose** | 등록된 사용자인지 확인하여 개인화된 서비스를 제공한다. |
+| **Approach** | 사용자가 SNS 계정을 통해 로그인을 요청하면 인증 서버를 통해 신원을 확인하고 서비스 접근 권한을 부여한다. |
+| **Dynamics** | 앱 실행 후 초기 진입 시 |
+| **Goals** | 간편하고 안전한 사용자 인증 체계 유지 |
 
-### 2) 계정 관리 (Account Management)
+### 2) 회원가입 (Sign Up)
 | | |
 |---|---|
-| Purpose | 사용자의 개인정보를 시스템에 등록하고 관리한다. |
-|Approach| 회원가입 시 사용자 데이터를 Database에 신규 저장하며, 정보 수정이나 탈퇴 요청 시 해당 데이터를 업데이트하거나 삭제 처리한다. |
-|Dynamics|최초 서비스 가입 시 또는 마이페이지에서 정보를 수정하거나 서비스 탈퇴를 원하는 경우 |
-|Goals| 효율적인 사용자 계정 관리 시스템을 구현한다.|
+| **Purpose** | 신규 사용자의 기본 정보를 시스템에 등록한다. |
+| **Approach** | 최초 접속 시 약관 동의와 함께 기본적인 사용자 프로필을 생성하여 저장한다. |
+| **Dynamics** | 서비스 최초 이용 시 |
+| **Goals** | 원활한 서비스 이용을 위한 기본 사용자 데이터 확보 |
 
-### 3) 맞춤 프로필 설정 (Custom Profile Setting)
+### 3) 프로필 관리
 | | |
 |---|---|
-| Purpose | 사용자의 특성에 최적화된 경로 탐색 기준을 수립한다.
-|Approach| 사용자가 선택한 선호도를 Database에 저장하고, 경로 탐색 시 활용하기 위해 전달한다. |
-|Dynamics| 계정 생성 직후 및 경로를 추천할 경우|
-|Goals| 개인별 맞춤형 이동 환경 데이터를 조성한다. |
+| **Purpose** | 사용자 개별 상황에 맞는 보행 환경 기준을 설정한다. |
+| **Approach** | 사용자가 평소 선호하는 길(경사 없는 길 등)이나 이동 제약 사항을 입력하면 이를 저장하여 경로 추천에 반영할 수 있도록 한다. |
+| **Dynamics** | 초기 설정 또는 마이페이지에서 정보를 수정할 경우 |
+| **Goals** | 사용자 맞춤형 서비스를 위한 개인 선호도 데이터 관리 |
 
-### 4) 시설 탐색 (Facility Search)
+### 4) 시설 탐색 
 | | |
 |---|---|
-| Purpose | 이동 중 필요한 시설의 위치를 안내한다. 
-|Approach|Geographic Info API와 Public Data를 결합하여 현재 위치 기반의 편의시설 정보를 지도상에 보여준다.|
-|Dynamics|사용자가 주변 시설 정보를 조회하거나 특정 시설을 검색할 경우|
-|Goals|교통약자의 정보 접근성 및 이동 편의성을 높인다.|
+| **Purpose** | 보행 중 주변에 있는 교통약자 편의 시설의 위치를 확인한다. |
+| **Approach** | 사용자의 위치 정보를 바탕으로 외부 지도 데이터와 공공 데이터를 결합하여 주변 시설물 정보를 지도에 표시한다. |
+| **Dynamics** | 지도 화면에서 주변 시설을 조회하거나 검색할 경우 |
+| **Goals** | 보행 시 필요한 편의 시설에 대한 정보 접근성 향상 |
 
-### 5) 최적 경로 추천 (Optimal Route Recommendation)
+### 5) 안전 경로 추천 
 | | |
 |---|---|
-| Purpose | 사용자의 특성과 실시간 도로 환경을 고려한 맞춤형 이동 동선을 제안한다.
-|Approach|AI Recommendation Service가 Database의 사용자 프로필, Public Data의 도로 상태, Geographic Info의 지형 정보를 종합 분석하여 최적의 경로를 도출한다.|
-|Dynamics|목적지를 검색하고 자신에게 가장 적합한 보행 경로를 탐색할 경우|
-|Goals|물리적 제약 요소를 최소화한 사용자 맞춤형 이동 경로를 제공한다.|
+| **Purpose** | 사용자의 선호도와 도로 환경을 고려한 맞춤형 이동 경로를 제안한다. |
+| **Approach** | 사용자가 설정한 보행 특성과 도로의 상태(경사, 노면 등)를 종합적으로 검토하여 가장 적합한 경로를 도출한다. |
+| **Dynamics** | 목적지 검색 후 본인에게 맞는 경로를 탐색할 경우 |
+| **Goals** | 개인별 선호를 반영한 안전하고 편리한 보행 경로 제공 |
 
-### 6) 실시간 경로 안내 및 주행 기록 (Navigation & Logging)
+### 6) 안전 정보 대조 
 | | |
 |---|---|
-| Purpose | 실제 이동 과정에서 정확한 길 안내를 제공하고 활동 데이터를 수집한다.
-|Approach|Geographic Info를 기반으로 사용자의 위치를 실시간 추적하여 안내를 수행해서 지도에 보여주며, 동시에 실제 이동 경로와 주행 로그를 Database에 지속적으로 저장한다.|
-|Dynamics|사용자가 실제 보행 및 이동을 시작하는 경우|
-|Goals|실시간 내비게이션 기능을 구현하고 분석용 주행 데이터를 확보한다.|
+| **Purpose** | 추천되는 경로가 실제 보행에 안전한지 데이터를 통해 검증한다. |
+| **Approach** | 시스템이 탐색된 경로 위에 공공데이터의 안전 정보(경사도 등)를 대조하여 각 구간의 보행 환경을 확인한다. |
+| **Dynamics** | 경로 추천 과정에서 내부적으로 수행 |
+| **Goals** | 객관적인 데이터에 근거한 보행 정보의 신뢰도 확보 |
 
-### 7) 이동 통계 및 리포트 확인 (Statistics & Report)
+### 7) 실시간 안내 및 로깅 (Walk & Logging)
 | | |
 |---|---|
-| Purpose | 사용자의 과거 활동 데이터를 분석하여 이동 지표를 제공한다.
-|Approach|Database에 저장된 주행 로그를 호출하여 이동 거리, 소요 시간 등을 계산하고 시각화된 리포트 형태로 생성하여 사용자에게 제시한다.|
-|Dynamics|보행 종료 후 활동 결과를 확인하거나 과거 이동 이력을 분석하고자 할 경우|
-|Goals|데이터 기반의 체계적인 활동 관리 및 성취감을 제공한다.|
+| **Purpose** | 실제 이동 시 정확한 길을 안내하고 활동 내용을 기록한다. |
+| **Approach** | 실시간 위치를 추적하여 경로를 안내하며, 보행이 끝나면 이동 거리, 시간, 칼로리 등의 데이터를 계산하여 저장한다. |
+| **Dynamics** | 사용자가 보행을 시작하고 종료할 때까지 |
+| **Goals** | 실시간 길 안내 제공 및 분석 가능한 활동 데이터 축적 |
 
 ### 8) 변경사항 제보 (Change Reporting)
 | | |
 |---|---|
-| Purpose | 실제 환경과 다르거나 새로 발생한 도로 정보를 제보한다.
-|Approach|사용자가 입력한 제보 내용을 Database에 저장하며, 이를 통해 기존 Public Data의 정보 공백을 보완한다.|
-|Dynamics|지도 정보와 실제 상황이 다를 경우|
-|Goals|사용자 참여를 통해 데이터의 정확성과 최신성을 유지한다.|
+| **Purpose** | 실제 도로의 변동 사항을 반영하여 지도 정보의 정확성을 높인다. |
+| **Approach** | 사용자가 현장에서 발견한 위험 요소나 지도와 다른 점을 제보하면 이를 저장하여 데이터의 공백을 보완한다. |
+| **Dynamics** | 실제 현장 상황이 정보와 다르거나 위험 요소를 발견했을 때 |
+| **Goals** | 사용자 참여를 통한 정확하고 최신화된 보행 정보 유지 |
 
-### 9) 활동 성과 및 배지 관리 (Achievement & Reward Management)
+### 9) 과거 이력 조회 (View Activity History)
 | | |
 |---|---|
-| Purpose | 사용자의 지속적인 서비스 이용을 독려한다.
-|Approach|Database에 누적된 활동량을 체크하여 특정 목표 달성 시 디지털 배지를 부여하고, 성과 지표를 갱신하여 사용자 프로필에 반영한다.|
-|Dynamics|설정된 이동 목표를 달성하였을 경우|
-|Goals|서비스 사용의 재미를 증대시키고 사용자의 지속적인 사용을 유도한다.|
-
-### 10) 경로 공유 (Favorites & Sharing)
-| | |
-|---|---|
-| Purpose | 유용한 경로 정보의 재사용성을 높이고 사용자 간 정보 교류를 활성화한다. 
-|Approach|특정 장소나 경로를 Database에 북마크로 저장하여 관리하며, 커뮤니티 기능을 통해 저장된 경로 데이터를 타 사용자에게 전송하거나 공유한다.|
-|Dynamics|자주 가는 경로를 저장하고 싶거나 자신이 발견한 좋은 경로를 타인에게 추천하고 싶은 경우|
-|Goals|경로 리스트 관리 및 커뮤니티 중심의 정보 공유 체계를 만든다.|
+| **Purpose** | 본인의 과거 활동 데이터를 확인하여 지속적인 보행 활동을 돕는다. |
+| **Approach** | 이전에 저장된 주행 로그를 불러와 이동 경로, 거리, 시간 등을 시각화된 리포트 형태로 제공한다. |
+| **Dynamics** | 활동 내역을 확인하거나 지난 보행 데이터를 분석하고 싶을 때 |
+| **Goals** | 데이터 기반의 활동 관리 및 성취감 고취 |
 
 <br>
 <br>
