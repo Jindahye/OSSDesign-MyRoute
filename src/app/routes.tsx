@@ -9,7 +9,8 @@ import { Navigation } from "./components/Navigation";
 import { Summary } from "./components/Summary";
 import { IssueReport } from "./components/IssueReport";
 import { MyPage } from "./components/MyPage";
-import { History } from "./components/History"; // History 추가!
+import { History } from "./components/History"; 
+import { KakaoCallback } from "./components/KakaoCallback";
 
 export const router = createBrowserRouter([
   {
@@ -55,5 +56,10 @@ export const router = createBrowserRouter([
   {
     path: "/history", // 기록 버튼과 연결되는 주소
     Component: History,
+  },
+
+  {
+    path: "/auth/kakao/callback",
+    Component: KakaoCallback,
   },
 ]);

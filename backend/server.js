@@ -1,13 +1,17 @@
 // backend/server.js
 const express = require('express');
 const app = express();
-const PORT = 3000; // 백엔드가 사용할 포트 번호
+const PORT = 3000; 
 
 app.use(express.json());
 
-// 서버 작동 확인용 기본 주소
+// auth 라우터를 가져와서 /api/auth 경로에 연결하기
+const authRoutes = require('./routes/auth'); 
+app.use('/api/auth', authRoutes); // 
+
+// test 
 app.get('/api/test', (req, res) => {
-    res.json({ message: "마이루트 찐 백엔드 서버가 정상적으로 구동 중입니다! 🚀" });
+    res.json({ message: "백엔드 서버가 정상적으로 구동 중입니둥" });
 });
 
 app.listen(PORT, () => {
