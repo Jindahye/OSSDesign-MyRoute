@@ -7,18 +7,18 @@ export function Summary() {
     <div className="w-[393px] h-[852px] bg-white mx-auto flex flex-col font-sans border-x border-gray-100">
       <div className="px-6 flex flex-col h-full">
         
-        {/* 헤더 - 로고와 통일감 */}
+        {/* 헤더 */}
         <div className="pt-16 pb-8">
           <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Walk Finished</p>
           <h1 className="text-3xl font-black italic tracking-tighter">오늘의 산책 요약</h1>
         </div>
 
-        {/* 경로 지도 프리뷰 - 아이콘 없이 담백하게 */}
+        {/* 경로 지도 프리뷰 */}
         <div className="w-full h-56 bg-gray-50 border-2 border-dashed border-gray-200 rounded-[32px] mb-10 flex flex-col items-center justify-center">
           <p className="text-gray-200 text-xs">(실제 이동 경로가 표시될 영역)</p>
         </div>
 
-        {/* 통계 정보 - Preferences 화면의 리스트 느낌과 통일 */}
+        {/* 통계 정보 */}
         <div className="flex-1 space-y-4">
           {[
             { label: '총 거리', value: '2.35', unit: 'km' },
@@ -37,7 +37,7 @@ export function Summary() {
           ))}
         </div>
 
-        {/* 확인 버튼 - 홈으로 돌아가기 */}
+        {/* 확인 버튼*/}
         <div className="pb-12">
           <button
             onClick={() => navigate("/home")}

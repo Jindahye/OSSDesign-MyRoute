@@ -52,7 +52,7 @@ export function Home() {
           </button>
         </div>
 
-        {/* 하단 탭바 - 이 부분이 핵심입니다! */}
+        {/* 하단 탭바 */}
         <div className="h-24 bg-white border-t border-gray-50 flex items-center justify-around pb-6">
           {/* 홈 버튼 */}
           <button 
@@ -63,7 +63,7 @@ export function Home() {
             <span className="text-[10px] font-bold">홈</span>
           </button>
 
-          {/* 기록 버튼 - /history로 연결 */}
+          {/* 기록 버튼*/}
           <button 
             onClick={() => navigate("/history")} 
             className="flex flex-col items-center gap-1 text-gray-300 hover:text-black transition-colors"
@@ -72,7 +72,7 @@ export function Home() {
             <span className="text-[10px] font-bold">기록</span>
           </button>
 
-          {/* 마이페이지 버튼 - /mypage로 연결 */}
+          {/* 마이페이지 버튼 */}
           <button 
             onClick={() => navigate("/mypage")} 
             className="flex flex-col items-center gap-1 text-gray-300 hover:text-black transition-colors"

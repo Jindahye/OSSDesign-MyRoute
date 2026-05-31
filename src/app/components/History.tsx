@@ -49,7 +49,7 @@ export function History() {
           ))}
         </div>
 
-        {/* 하단 탭바 - 이제 여기서 홈이나 마이페이지로 이동 가능! */}
+        {/* 하단 탭바*/}
         <div className="h-24 bg-white border-t border-gray-50 flex items-center justify-around pb-6 -mx-6 px-6">
           {/* 홈 버튼 */}
           <button 
@@ -60,7 +60,7 @@ export function History() {
             <span className="text-[10px] font-bold">홈</span>
           </button>
 
-          {/* 기록 버튼 (현재 위치: Black 강조) */}
+          {/* 기록 버튼 */}
           <button 
             onClick={() => navigate("/history")} 
             className="flex flex-col items-center gap-1 text-black"
