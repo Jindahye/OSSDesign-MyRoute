@@ -2,24 +2,43 @@
 const express = require('express');
 const router = express.Router();
 
-/**
- * @route POST /api/auth/kakao
- * @desc 프론트엔드로부터 카카오 인가 코드를 수신하는 API 엔드포인트
- */
-router.post('/kakao', (req, res) => {
-    // 1. HTTP Request Body로부터 인가 코드(code) 파싱
+router.post('/kakao', async (req, res) => {
+    // 프론트엔드에서 전송한 인가 코드 수신
     const code = req.body.code; 
     
-    // 2. 백엔드 터미널(콘솔)에 수신 데이터 출력 (디버깅용)
-    console.log("=====================================");
-    console.log("수신된 카카오 인가 코드 (Authorization Code):", code);
-    console.log("=====================================");
+    try {
+        // 카카오 인증 서버로 액세스 토큰 요청 (HTTP POST)
+        const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
+            method: 'POST',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
+            },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                client_id: process.env.VITE_KAKAO_REST_API_KEY, // .env 파일의 API 키
+                redirect_uri: process.env.VITE_KAKAO_REDIRECT_URI, // .env 파일의 리다이렉트 주소
+                code: code // 프론트에서 받은 인가 코드
+            })
+        });
 
-    // 3. Client(프론트엔드)로 HTTP 200 OK 응답(JSON) 전송
-    res.json({ 
-        message: "백엔드: 카카오 인가 코드가 정상적으로 수신되었습니다.", 
-        receivedCode: code 
-    });
+        // 카카오 서버의 응답을 JSON으로 파싱
+        const tokenData = await tokenResponse.json();
+        
+        // 백엔드 콘솔에 발급된 액세스 토큰 출력 (디버깅용)
+        console.log("=====================================");
+        console.log("카카오 액세스 토큰 발급 성공:", tokenData.access_token);
+        console.log("=====================================");
+
+        // 프론트엔드로 성공 응답 전송
+        res.json({ 
+            message: "백엔드: 카카오 토큰 발급 통신 완료!", 
+            token: tokenData.access_token 
+        });
+
+    } catch (error) {
+        console.error("카카오 토큰 발급 중 서버 에러 발생:", error);
+        res.status(500).json({ message: "서버 내부 통신 에러" });
+    }
 });
 
 module.exports = router;

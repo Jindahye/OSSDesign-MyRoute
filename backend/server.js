@@ -1,4 +1,7 @@
 // backend/server.js
+
+require('dotenv').config({ path: '../.env' });
+
 const express = require('express');
 const app = express();
 const PORT = 3000; 
