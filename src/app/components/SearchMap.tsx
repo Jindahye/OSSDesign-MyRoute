@@ -7,7 +7,6 @@ export function SearchMap() {
   const [time, setTime] = useState(0);
   const [distance, setDistance] = useState(0);
 
-  // 실시간 시간/거리 측정 시뮬레이션
   useEffect(() => {
     const interval = setInterval(() => {
       setTime((prev) => prev + 1);

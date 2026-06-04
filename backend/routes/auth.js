@@ -4,18 +4,17 @@ const router = express.Router();
 
 /**
  * @route POST /api/auth/kakao
- * @desc 인가 코드로 토큰을 발급받고, 사용자 프로필 정보를 조회하는 API
+ * @desc 카카오 로그인 및 신규/기존 회원 분기 처리
  */
 router.post('/kakao', async (req, res) => {
     const code = req.body.code; 
+    const db = req.app.get('db'); // server.js에서 등록한 DB 객체 꺼내오기
     
     try {
-        // 카카오 인증 서버로 액세스 토큰 요청 (HTTP POST)
+        // 카카오 토큰 요청
         const tokenResponse = await fetch('https://kauth.kakao.com/oauth/token', {
             method: 'POST',
-            headers: {
-                'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
-            },
+            headers: { 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8' },
             body: new URLSearchParams({
                 grant_type: 'authorization_code',
                 client_id: process.env.VITE_KAKAO_REST_API_KEY,
@@ -23,41 +22,88 @@ router.post('/kakao', async (req, res) => {
                 code: code
             })
         });
-
         const tokenData = await tokenResponse.json();
-        const accessToken = tokenData.access_token; // 인증 마스터키 추출
+        const accessToken = tokenData.access_token;
 
-        // 발급받은 액세스 토큰을 사용하여 카카오 사용자 정보 API 호출 (HTTP GET)
+        // 카카오 사용자 정보 요청
         const userResponse = await fetch('https://kapi.kakao.com/v2/user/me', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${accessToken}`, // 헤더에 Bearer 토큰 주입
+                'Authorization': `Bearer ${accessToken}`,
                 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8'
             }
         });
-
         const userData = await userResponse.json();
         
-        // 백엔드 콘솔에 수신된 사용자 프로필 출력 (디버깅)
-        console.log("=====================================");
-        console.log("카카오 사용자 프로필 수신 성공");
-        console.log("회원 고유 ID:", userData.id);
-        console.log("사용자 닉네임:", userData.properties?.nickname);
-        console.log("=====================================");
+        const kakaoId = String(userData.id);
+        const defaultNickname = userData.properties?.nickname || "사용자";
+        const profileImage = userData.properties?.profile_image || "";
 
-        // 프론트엔드로 사용자 정보 및 성공 메시지 반환
-        res.json({ 
-            message: `${userData.properties?.nickname}님, 로그인이 완료되었습니다.`, 
-            user: {
-                id: userData.id,
-                nickname: userData.properties?.nickname,
-                profileImage: userData.properties?.profile_image
-            }
+        // DB에서 이미 가입된 사용자인지 조회하기
+        const existingUser = await db.get('SELECT * FROM users WHERE kakao_id = ?', [kakaoId]);
+
+        if (existingUser) {
+            // [기존 회원] DB에 정보가 있으므로 바로 로그인 성공 처리
+            console.log(`[로그인] 기존 회원 방문: ${existingUser.nickname}`);
+            res.json({ 
+                isNewUser: false,
+                message: `${existingUser.nickname}님, 다시 만나서 반가워요!`, 
+                user: existingUser
+            });
+        } else {
+            // [신규 회원] DB에 정보가 없으므로 회원가입 페이지로 안내
+            console.log(`[미가입] 신규 회원 감지 (ID: ${kakaoId})`);
+            res.json({ 
+                isNewUser: true,
+                message: "신규 회원입니다. 회원가입 페이지로 이동합니다.",
+                user: {
+                    id: kakaoId,
+                    nickname: defaultNickname,
+                    profileImage: profileImage
+                }
+            });
+        }
+
+    } catch (error) {
+        console.error("카카오 인증 및 DB 조회 중 에러 발생:", error);
+        res.status(500).json({ message: "서버 내부 인증 에러" });
+    }
+});
+
+
+/**
+ * @route POST /api/auth/signup
+ * @desc 신규 회원의 닉네임 및 산책 취향을 DB에 최종 저장 (회원가입)
+ */
+router.post('/signup', async (req, res) => {
+    const db = req.app.get('db');
+    const { kakaoId, nickname, profileImage, preferences } = req.body;
+
+    try {
+        // 프론트엔드에서 보낸 취향 object를 0 또는 1 숫자로 변환하여 저장
+        const slope = preferences.slope ? 1 : 0;
+        const wheeled = preferences.wheeled ? 1 : 0;
+        const walking = preferences.walking ? 1 : 0;
+        const running = preferences.running ? 1 : 0;
+
+        // DB 장부에 새 회원 꽂아 넣기 (INSERT)
+        await db.run(`
+            INSERT INTO users (kakao_id, nickname, profile_image, slope, wheeled, walking, running)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        `, [kakaoId, nickname, profileImage, slope, wheeled, walking, running]);
+
+        // 저장된 유저 정보 다시 조회해서 가져오기
+        const newUser = await db.get('SELECT * FROM users WHERE kakao_id = ?', [kakaoId]);
+        
+        console.log(`[회원가입 성공] 새로운 회원 등록 완료: ${nickname}`);
+        res.status(201).json({
+            message: `${nickname}님, MyRoute 회원가입을 축하합니다!`,
+            user: newUser
         });
 
     } catch (error) {
-        console.error("카카오 인증 및 프로필 조회 중 에러 발생:", error);
-        res.status(500).json({ message: "서버 내부 인증 에러가 발생했습니다." });
+        console.error("회원가입 DB 저장 중 에러 발생:", error);
+        res.status(500).json({ message: "회원가입 처리 중 서버 에러가 발생했습니다." });
     }
 });
 

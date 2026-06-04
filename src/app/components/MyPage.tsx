@@ -6,13 +6,12 @@ export function MyPage() {
   const navigate = useNavigate();
   const [nickname, setNickname] = useState("사용자"); 
 
-  // 컴포넌트가 마운트될 때 로컬스토리지에서 사용자 정보 가져오기
   useEffect(() => {
     const localData = localStorage.getItem("user");
     if (localData) {
       const user = JSON.parse(localData);
       if (user.nickname) {
-        setNickname(user.nickname); // 닉네임이 존재하면 상태 업데이트
+        setNickname(user.nickname); 
       }
     }
   }, []);

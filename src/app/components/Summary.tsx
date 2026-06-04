@@ -37,7 +37,7 @@ export function Summary() {
           ))}
         </div>
 
-        {/* 확인 버튼*/}
+        {/* 확인 버튼 */}
         <div className="pb-12">
           <button
             onClick={() => navigate("/home")}
