@@ -1,85 +1,100 @@
 import { useNavigate, useLocation } from "react-router";
-import { useState } from "react";
-import { Clock, ArrowRight, MapPin } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { MapPin, ArrowRight, Navigation } from "lucide-react";
+
+declare global { interface Window { kakao: any; } }
 
 export function RouteSelection() {
   const navigate = useNavigate();
-  const location = useLocation(); 
-  const [selected, setSelected] = useState(0);
+  const location = useLocation();
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<any>(null);
+  const [destCoords, setDestCoords] = useState<{lat: number, lng: number} | null>(null);
 
+  // 이전 컴포넌트에서 전달된 목적지 식별자 수신
   const destinationName = location.state?.destination || "목적지 미설정";
 
-  const routes = [
-    { id: 0, title: "가장 안전한 경로", time: "15", desc: "단차가 적고 조명이 밝은 길", tag: "추천" },
-    { id: 1, title: "최단 시간 경로", time: "10", desc: "조금 가파르지만 가장 빠른 길", tag: "빠름" },
-    { id: 2, title: "완만한 평지 경로", time: "18", desc: "계단이 없는 휠체어/유아차 맞춤", tag: "편안" },
-  ];
+  useEffect(() => {
+    if (!window.kakao || !window.kakao.maps) return;
+
+    window.kakao.maps.load(() => {
+      const container = mapContainerRef.current;
+      const options = {
+        center: new window.kakao.maps.LatLng(35.8906, 128.8525),
+        level: 3
+      };
+      const map = new window.kakao.maps.Map(container, options);
+      mapRef.current = map;
+
+      // 목적지 키워드 기반 Geocoding 수행
+      const ps = new window.kakao.maps.services.Places();
+      ps.keywordSearch(destinationName, (data: any, status: any) => {
+        if (status === window.kakao.maps.services.Status.OK) {
+          const firstResult = data[0];
+          const pos = new window.kakao.maps.LatLng(firstResult.y, firstResult.x);
+          
+          setDestCoords({ lat: parseFloat(firstResult.y), lng: parseFloat(firstResult.x) });
+
+          // 검색 좌표 기준 마커 인스턴스 렌더링
+          new window.kakao.maps.Marker({
+            position: pos,
+            map: map,
+          });
+
+          // 지도 중심 좌표를 검색된 좌표로 이동
+          map.panTo(pos);
+        }
+      });
+    });
+  }, [destinationName]);
+
+  const handleStartWalk = () => {
+    if (!destCoords) {
+      alert("목적지 좌표를 불러오는 중입니다. 잠시만 기다려주세요.");
+      return;
+    }
+    // Navigation 컴포넌트로 목적지 명칭 및 위경도 데이터 전달
+    navigate("/navigation", { 
+      state: { 
+        destination: destinationName,
+        destCoords: destCoords 
+      } 
+    });
+  };
 
   return (
-    <div className="w-[393px] h-[852px] bg-white mx-auto flex flex-col font-sans border-x border-gray-100">
-      <div className="px-6 flex flex-col h-full">
-        {/* 헤더 */}
-        <div className="h-20 flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="text-2xl">←</button>
-          <h1 className="text-xl font-bold">추천 경로 선택</h1>
-        </div>
+    <div className="w-[393px] h-[852px] bg-white mx-auto flex flex-col font-sans border-x border-gray-100 relative">
+      <div className="flex-1 flex flex-col">
+        <div ref={mapContainerRef} className="w-full h-[400px] bg-gray-100" />
 
-        {/* 현재 목적지 정보 */}
-        <div className="bg-gray-50 p-5 rounded-[24px] flex items-center gap-4 mb-8">
-          <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center shadow-md">
-            <MapPin className="text-white w-6 h-6" />
+        <div className="px-6 py-8 flex-1 bg-white rounded-t-[40px] -mt-10 relative z-10 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+          <div className="flex items-center gap-2 text-gray-400 mb-2">
+            <Navigation className="w-4 h-4" />
+            <span className="text-xs font-bold uppercase tracking-widest">Recommended Route</span>
           </div>
-          <div>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Destination</p>
-            <p className="font-black text-lg">{destinationName}</p>
-          </div>
-        </div>
+          
+          <h1 className="text-3xl font-black mb-6">{destinationName}</h1>
 
-        {/* 경로 리스트 */}
-        <div className="flex-1 space-y-4 overflow-y-auto pb-4">
-          {routes.map((route) => (
-            <div
-              key={route.id}
-              onClick={() => setSelected(route.id)}
-              className={`p-6 rounded-[32px] border-2 transition-all cursor-pointer ${
-                selected === route.id 
-                  ? 'border-black bg-white shadow-xl shadow-black/5' 
-                  : 'border-gray-50 bg-gray-50'
-              }`}
-            >
-              <div className="flex justify-between items-start mb-3">
-                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                  selected === route.id ? 'bg-black text-white' : 'bg-gray-200 text-gray-500'
-                }`}>
-                  {route.tag}
-                </span>
+          <div className="space-y-4">
+            <div className="p-6 bg-black text-white rounded-[32px] flex justify-between items-center shadow-xl">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 mb-1">Safety First</p>
+                <h2 className="text-xl font-bold">가장 안전한 경로</h2>
               </div>
-              
-              <h2 className={`text-xl font-black mb-2 ${selected === route.id ? 'text-black' : 'text-gray-400'}`}>
-                {route.title}
-              </h2>
-              
-              <div className="flex items-center gap-4 font-bold text-sm">
-                <div className="flex items-center gap-1.5 text-black">
-                  <Clock className="w-4 h-4" />
-                  <span>{route.time}분</span>
-                </div>
-                <p className="text-xs text-gray-400">{route.desc}</p>
+              <div className="text-right">
+                <p className="text-2xl font-black text-[#deff9a]">15분</p>
+                <p className="text-[10px] text-gray-400">1.2km</p>
               </div>
             </div>
-          ))}
+          </div>
         </div>
 
-        {/* 하단 버튼 */}
-        <div className="pb-12">
-          <button
-            onClick={() => navigate("/navigation")}
-            className="w-full h-18 bg-black text-white rounded-2xl text-xl font-black flex items-center justify-center gap-3 shadow-lg active:scale-[0.98] transition-transform"
-          >
-            산책 시작하기
-            <ArrowRight className="w-6 h-6" />
-          </button>
-        </div>
+        <button 
+          onClick={handleStartWalk}
+          className="w-[345px] mx-auto h-18 bg-black text-white rounded-2xl text-xl font-black mb-12 flex items-center justify-center gap-3 active:scale-95 transition-transform"
+        >
+          산책 시작하기 <ArrowRight className="w-6 h-6" />
+        </button>
       </div>
     </div>
   );
