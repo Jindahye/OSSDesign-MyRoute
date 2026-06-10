@@ -109,7 +109,7 @@ MyRoute는 교통약자 및 개인별 보행 선호도를 반영하는 사용자
 #### (2) Methods
 * `+ useEffect(): void` : 산책 종료 후 총 거리, 시간 등 요약 데이터 표시
 
-### 2.2.9 SearchMap
+### 2.2.9 FreeWalking
 #### (1) Attributes
 * `- time: Integer` : 자유 산책 시간
 * `- distance: Float` : 자유 산책 거리
@@ -199,7 +199,7 @@ MyRoute는 교통약자 및 개인별 보행 선호도를 반영하는 사용자
 ## 3.4 자유 산책 및 위험 제보 (Free Walking & Issue Report)
 ![위험제보](./images/seq_report.png)
 <br>
-위의 그림은 목적지 없이 자유롭게 산책을 진행하다가 도로의 공사나 파손 등의 위험 요소를 발견해 제보하는 과정을 표현한 Sequence Diagram이다. SearchMap 컴포넌트에서 실시간 산책 정보를 기록하던 중, 유저가 제보 버튼을 누르면 IssueReport 화면으로 이동한다. 유저가 선택한 위험 종류와 상세 설명은 백엔드 서버를 거쳐 데이터베이스의 issue_reports 테이블에 등록된다.
+위의 그림은 목적지 없이 자유롭게 산책을 진행하다가 도로의 공사나 파손 등의 위험 요소를 발견해 제보하는 과정을 표현한 Sequence Diagram이다. FreeWalking 컴포넌트에서 실시간 산책 정보를 기록하던 중, 유저가 제보 버튼을 누르면 IssueReport 화면으로 이동한다. 유저가 선택한 위험 종류와 상세 설명은 백엔드 서버를 거쳐 데이터베이스의 issue_reports 테이블에 등록된다.
 
 <br>
 
@@ -229,7 +229,7 @@ MyRoute는 교통약자 및 개인별 보행 선호도를 반영하는 사용자
 ## 4.2 Client System State Machine Diagram
 ![Client State Machine](./images/state_client.png)
 <br>
-위의 그림은 사용자가 조작하는 MyRoute 모바일 어플리케이션 클라이언트 시스템의 화면 전환과 동작 모드를 표현한 State Machine Diagram이다. 앱이 구동되면 Login 대기 상태에서 KakaoCallback을 통한 인증 과정을 거치며, Choice 노드를 통해 가입 유무를 판단하여 온보딩(SignUp 및 Preferences)을 진행하거나 메인 Home 화면으로 진입한다. 이후 사용자의 인터랙션에 따라 RouteSelection과 Navigation을 거치는 추천 가이드 모드, SearchMap과 IssueReport 중심의 자유 산책 모드, 그리고 MyPage와 History를 관리하는 사용자 설정 모드로 전환을 수행한다.
+위의 그림은 사용자가 조작하는 MyRoute 모바일 어플리케이션 클라이언트 시스템의 화면 전환과 동작 모드를 표현한 State Machine Diagram이다. 앱이 구동되면 Login 대기 상태에서 KakaoCallback을 통한 인증 과정을 거치며, Choice 노드를 통해 가입 유무를 판단하여 온보딩(SignUp 및 Preferences)을 진행하거나 메인 Home 화면으로 진입한다. 이후 사용자의 인터랙션에 따라 RouteSelection과 Navigation을 거치는 추천 가이드 모드, FreeWalking과 IssueReport 중심의 자유 산책 모드, 그리고 MyPage와 History를 관리하는 사용자 설정 모드로 전환을 수행한다.
 
 <br>
 <br>

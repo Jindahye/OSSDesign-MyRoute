@@ -3,7 +3,8 @@ import { Login } from "./components/Login";
 import { SignUp } from "./components/SignUp";
 import { Preferences } from "./components/Preferences";
 import { Home } from "./components/Home";
-import { SearchMap } from "./components/SearchMap";
+import { FreeWalking } from "./components/FreeWalking";
+import { SearchPlace } from "./components/SearchPlace"; // SearchPlace 컴포넌트 import 추가
 import { RouteSelection } from "./components/RouteSelection";
 import { Navigation } from "./components/Navigation";
 import { Summary } from "./components/Summary";
@@ -31,7 +32,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/search",
-    Component: SearchMap,
+    Component: FreeWalking,
+  },
+  {
+    path: "/search-place", // 목적지 검색 및 리스트 화면 라우트 추가
+    Component: SearchPlace,
   },
   {
     path: "/routes",
@@ -46,18 +51,17 @@ export const router = createBrowserRouter([
     Component: Summary,
   },
   {
-    path: "/report", // 상황 제보 버튼(+ 버튼)과 연결되는 주소
+    path: "/report",
     Component: IssueReport,
   },
   {
-    path: "/mypage", // 마이페이지 버튼과 연결되는 주소
+    path: "/mypage",
     Component: MyPage,
   },
   {
-    path: "/history", // 기록 버튼과 연결되는 주소
+    path: "/history",
     Component: History,
   },
-
   {
     path: "/auth/kakao/callback",
     Component: KakaoCallback,

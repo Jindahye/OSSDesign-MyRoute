@@ -193,7 +193,7 @@ Revision date|Version #|Description|Author
   <tbody>
     <tr><td colspan="3"><b>GENERAL CHARACTERISTICS</b></td></tr>
     <tr><td width="25%">Summary</td><td colspan="2">목적지 없는 완전 자율 보행 트래킹을 지원하는 도중 사용자가 현장에서 목격한 공사, 도로 파손 등 돌발 리스크를 데이터베이스에 즉각 제보하여 등록한다.</td></tr>
-    <tr><td>Scope</td><td colspan="2">MyRoute System (SearchMap, IssueReport)</td></tr>
+    <tr><td>Scope</td><td colspan="2">MyRoute System (FreeWalking, IssueReport)</td></tr>
     <tr><td>Level</td><td colspan="2">User Level</td></tr>
     <tr><td>Author</td><td colspan="2">진다혜</td></tr>
     <tr><td>Last Update</td><td colspan="2">2026-06-05</td></tr>
@@ -207,7 +207,7 @@ Revision date|Version #|Description|Author
     <tr><td colspan="3"><b>MAIN SUCCESS SCENARIO</b></td></tr>
     <tr><td style="text-align:center;">Step</td><td colspan="2">Action</td></tr>
     <tr><td style="text-align:center;">1</td><td colspan="2">사용자가 메인 화면 하단 대시보드 구역에서 '자유 산책 시작' 단추를 선택한다.</td></tr>
-    <tr><td style="text-align:center;">2</td><td colspan="2">SearchMap 컴포넌트가 활성화되며, 목적지 유무와 관계없이 디바이스 하드웨어 위경도 공간 데이터를 취합해 이동 실적을 실시간 화면에 표출한다.</td></tr>
+    <tr><td style="text-align:center;">2</td><td colspan="2">FreeWalking 컴포넌트가 활성화되며, 목적지 유무와 관계없이 디바이스 하드웨어 위경도 공간 데이터를 취합해 이동 실적을 실시간 화면에 표출한다.</td></tr>
     <tr><td style="text-align:center;">3</td><td colspan="2">사용자가 보행 중 도로 싱크홀, 노면 공사 등의 위험 상황을 발견하고 우측 하단 제보 버튼(+)을 터치한다.</td></tr>
     <tr><td style="text-align:center;">4</td><td colspan="2">IssueReport 컴포넌트로 화면이 전이되며, 시스템은 현재 조작 시점의 실시간 GPS 좌표를 제보 메타데이터에 자동 하드코딩 바인딩한다.</td></tr>
     <tr><td style="text-align:center;">5</td><td colspan="2">사용자가 직관적인 UI 폼을 통해 위험 종류(공사중/파손/장애물)를 선택하고 상세 텍스트 설명을 기입한 뒤 '제보 제출'을 누른다.</td></tr>
@@ -310,7 +310,7 @@ Class|Description|Mapping Class / DB Component
 **RouteSegment** | 전체 경로를 구성하는 가변적 길이의 최소 단위 도로 구간 아키텍처 노드이다. 특정 공간 위경도 범위 내에 존재하는 경사율, 장애물 인프라 밀집도를 보유하여 시스템 내부 가중치 스코어 연산의 기본 피연산 객체로 활용된다. | System Logic Internal Data Type
 **SafetyData** | 국가 공공데이터포털 시스템을 통해 유입된 보행 안전 표준 물리 인프라 정보이다. 고정밀 등고선 지형 경사 정보, 배리어프리 엘리베이터 위치, 보도블록 파손 지수 등의 원천 정량 소스를 내포한다. | Public Data API Object Context
 **WalkingLog** | 산책 활동이 무사히 종료(수렴)되는 타이밍에 Navigation 트레커의 누적 버퍼 값들을 집계하여 생산하는 통계 데이터 레코드 객체이다. | Class `Summary`, Table `walk_histories`
-**GPSPoint** | 실시간 보행 안내 및 자율 주행 시 모바일 디바이스 하드웨어 가속기로부터 가변 주기로 인입되는 공간 위치 좌표(Latitude, Longitude) 원천 쌍 구조체이다. | Class `Navigation`, `SearchMap`, DataType `GPSPoint`
+**GPSPoint** | 실시간 보행 안내 및 자율 주행 시 모바일 디바이스 하드웨어 가속기로부터 가변 주기로 인입되는 공간 위치 좌표(Latitude, Longitude) 원천 쌍 구조체이다. | Class `Navigation`, `FreeWalking`, DataType `GPSPoint`
 **Report** | 지도 백로그 사양서에 잡히지 않는 돌발적인 도로의 공사 유무, 불법 주정차 장애물, 노면 균열 등의 상황을 집단 지성 기반 크라우드소싱 기법으로 수집한 돌발 위험 요소 인스턴스이다. | Class `IssueReport`, Table `issue_reports`
 
 <br>
@@ -344,8 +344,8 @@ Class|Description|Mapping Class / DB Component
 ![4.6 내비게이션 화면](./images/Navigation.png)<br>
 선택 경로의 폴리라인 선형 데이터 위에 사용자의 GPS 위치 마커를 올려 실시간 가이드를 진행하는 상태 화면이다. 하단부 계량 컴포넌트가 인터벌 루프를 통해 이동 거리(Float), 경과 시간(Integer) 사양을 실시간 드라이브한다 **(Use Case #3 매핑)**.
 
-### 4.7 SearchMap (자유 산책 시작)
-![4.7 자유 산책 화면](./images/SearchMap.png)<br>
+### 4.7 FreeWalking (자유 산책 시작)
+![4.7 자유 산책 화면](./images/FreeWalking.png)<br>
 목적지 속박 없이 자율적으로 보행하며 활동 실적을 트래킹하는 화면이다. Kakao Map 컴포넌트가 화면 전체에 표출되며, 보행 중 돌발 위험 요소를 인지했을 때 즉각 제보 폼으로 전이 가능한 퀵 액션 버튼(+)을 지원한다 **(Use Case #4 매핑)**.
 
 ### 4.8 Issue Report (상황 제보)
