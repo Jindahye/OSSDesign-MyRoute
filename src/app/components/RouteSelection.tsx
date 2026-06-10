@@ -1,10 +1,13 @@
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
 import { useState } from "react";
 import { Clock, ArrowRight, MapPin } from "lucide-react";
 
 export function RouteSelection() {
   const navigate = useNavigate();
+  const location = useLocation(); 
   const [selected, setSelected] = useState(0);
+
+  const destinationName = location.state?.destination || "목적지 미설정";
 
   const routes = [
     { id: 0, title: "가장 안전한 경로", time: "15", desc: "단차가 적고 조명이 밝은 길", tag: "추천" },
@@ -28,7 +31,7 @@ export function RouteSelection() {
           </div>
           <div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Destination</p>
-            <p className="font-black text-lg">중앙도서관 앞 광장</p>
+            <p className="font-black text-lg">{destinationName}</p>
           </div>
         </div>
 

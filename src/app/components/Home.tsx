@@ -1,33 +1,55 @@
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import { Search, Map, Route, History, User } from "lucide-react";
 
 export function Home() {
   const navigate = useNavigate();
 
+  // 검색어 입력 상태 관리
+  const [keyword, setKeyword] = useState("");
+
+  // 검색 폼 제출 처리
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!keyword.trim()) {
+      alert("목적지를 입력해 주세요!");
+      return;
+    }
+
+    // 경로 선택 페이지로 목적지 데이터 전달
+    navigate("/routes", { state: { destination: keyword } });
+  };
+
   return (
     <div className="w-[393px] h-[852px] bg-white mx-auto flex flex-col font-sans border-x border-gray-100">
       <div className="px-6 flex flex-col h-full">
         
-        {/* 상단 헤더 & 로고 */}
+        {/* 상단 헤더 영역 */}
         <div className="pt-12 pb-4 flex justify-between items-center">
           <h1 className="text-2xl font-black italic tracking-tighter">MyRoute</h1>
           <div 
             onClick={() => navigate("/mypage")} 
-            className="w-10 h-10 bg-black rounded-full flex items-center justify-center cursor-pointer"
+            className="w-10 h-10 bg-black rounded-full flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
           >
             <User className="text-white w-5 h-5" />
           </div>
         </div>
 
-        {/* 검색창 */}
-        <div className="py-4">
-          <div className="w-full h-14 bg-gray-50 border-2 border-gray-50 rounded-2xl px-5 flex items-center gap-3 shadow-sm">
+        {/* 목적지 검색 폼 */}
+        <form onSubmit={handleSearchSubmit} className="py-4">
+          <div className="w-full h-14 bg-gray-50 border-2 border-gray-50 focus-within:border-black transition-colors rounded-2xl px-5 flex items-center gap-3 shadow-sm">
             <Search className="w-5 h-5 text-gray-400" />
-            <span className="text-gray-400 font-medium">목적지를 입력하세요.</span>
+            <input 
+              type="text"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              placeholder="목적지를 입력하세요."
+              className="flex-1 bg-transparent outline-none font-medium text-black placeholder:text-gray-400"
+            />
           </div>
-        </div>
+        </form>
 
-        {/* 메인 액션 영역 */}
+        {/* 서비스 기능 선택 영역 */}
         <div className="flex-1 flex flex-col gap-5 py-6">
           <button
             onClick={() => navigate("/routes")}
@@ -52,18 +74,16 @@ export function Home() {
           </button>
         </div>
 
-        {/* 하단 탭바 */}
+        {/* 하단 내비게이션 탭바 */}
         <div className="h-24 bg-white border-t border-gray-50 flex items-center justify-around pb-6">
-          {/* 홈 버튼 */}
           <button 
             onClick={() => navigate("/home")} 
             className="flex flex-col items-center gap-1"
           >
             <Search className="w-6 h-6 text-black" />
-            <span className="text-[10px] font-bold">홈</span>
+            <span className="text-[10px] font-bold text-black">홈</span>
           </button>
 
-          {/* 기록 버튼*/}
           <button 
             onClick={() => navigate("/history")} 
             className="flex flex-col items-center gap-1 text-gray-300 hover:text-black transition-colors"
@@ -72,7 +92,6 @@ export function Home() {
             <span className="text-[10px] font-bold">기록</span>
           </button>
 
-          {/* 마이페이지 버튼 */}
           <button 
             onClick={() => navigate("/mypage")} 
             className="flex flex-col items-center gap-1 text-gray-300 hover:text-black transition-colors"
