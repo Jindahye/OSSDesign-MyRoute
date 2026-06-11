@@ -1,5 +1,7 @@
 import { useNavigate, useLocation } from "react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { getKakaoId } from "../utils/auth";
+import { toLatLngPoint, LatLngPoint } from "../utils/geo";
 
 declare global {
   interface Window {
@@ -11,52 +13,107 @@ export function Summary() {
   const navigate = useNavigate();
   const location = useLocation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  
-  // 산책 화면에서 전달받은 데이터
-  const { path, distance, time } = location.state || { path: [], distance: 0, time: 0 };
+  const [saved, setSaved] = useState(false);
+
+  const {
+    path = [],
+    distance = 0,
+    time = 0,
+    walkType = 'guided',
+    destination,
+    isViewMode = false,
+    date,
+  } = location.state || {};
+
+  const normalizedPath: LatLngPoint[] = (path as any[])
+    .map(toLatLngPoint)
+    .filter((p): p is LatLngPoint => p !== null);
 
   useEffect(() => {
-    if (window.kakao && window.kakao.maps) {
-      window.kakao.maps.load(() => {
-        if (!mapContainerRef.current || path.length === 0) return;
+    if (isViewMode || saved || normalizedPath.length === 0) return;
 
-        const map = new window.kakao.maps.Map(mapContainerRef.current, {
-          center: path[0],
-          level: 3,
-        });
+    const kakaoId = getKakaoId();
+    const record = {
+      date: new Date().toLocaleString('ko-KR'),
+      distance,
+      time,
+      path: normalizedPath,
+      walkType,
+      destination: destination || null,
+    };
 
-        // 이동 경로 선(Polyline) 설정
-        const polyline = new window.kakao.maps.Polyline({
-          path: path,
-          strokeWeight: 5,
-          strokeColor: "#000000",
-          strokeOpacity: 1,
-          strokeStyle: "solid",
-        });
+    const existing = localStorage.getItem("walkHistory");
+    const history = existing ? JSON.parse(existing) : [];
+    history.push(record);
+    localStorage.setItem("walkHistory", JSON.stringify(history));
+    setSaved(true);
 
-        polyline.setMap(map);
-
-        // 경로의 시작점과 끝점 마커 표시
-        new window.kakao.maps.Marker({ position: path[0], map });
-        new window.kakao.maps.Marker({ position: path[path.length - 1], map });
-      });
+    if (kakaoId) {
+      fetch('/api/routes/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          kakaoId,
+          distance,
+          time,
+          path: normalizedPath,
+          walkType,
+        }),
+      }).catch((err) => console.error('서버 기록 저장 실패:', err));
     }
-  }, [path]);
+  }, [isViewMode, saved, distance, time, walkType, destination, path]);
+
+  useEffect(() => {
+    if (!window.kakao?.maps || normalizedPath.length === 0) return;
+
+    window.kakao.maps.load(() => {
+      if (!mapContainerRef.current) return;
+
+      const kakaoPath = normalizedPath.map(
+        (p) => new window.kakao.maps.LatLng(p.lat, p.lng)
+      );
+
+      const map = new window.kakao.maps.Map(mapContainerRef.current, {
+        center: kakaoPath[0],
+        level: 3,
+      });
+
+      const polyline = new window.kakao.maps.Polyline({
+        path: kakaoPath,
+        strokeWeight: 5,
+        strokeColor: "#000000",
+        strokeOpacity: 1,
+        strokeStyle: "solid",
+      });
+      polyline.setMap(map);
+
+      new window.kakao.maps.Marker({ position: kakaoPath[0], map });
+      new window.kakao.maps.Marker({ position: kakaoPath[kakaoPath.length - 1], map });
+    });
+  }, [normalizedPath]);
 
   return (
     <div className="w-[393px] h-[852px] bg-white mx-auto flex flex-col font-sans border-x border-gray-100">
       <div className="px-6 flex flex-col h-full">
         <div className="pt-16 pb-8">
-          <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">Walk Finished</p>
+          <p className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1">
+            {isViewMode ? 'Walk Record' : 'Walk Finished'}
+          </p>
           <h1 className="text-3xl font-black italic tracking-tighter">오늘의 산책 요약</h1>
+          {date && <p className="text-sm text-gray-400 mt-2">{date}</p>}
+          {destination && <p className="text-sm font-bold mt-1">목적지: {destination}</p>}
         </div>
 
-        {/* 경로 지도 프리뷰 영역 */}
         <div className="w-full h-56 bg-gray-50 border-2 border-black rounded-[32px] mb-10 overflow-hidden relative">
-          <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
+          {normalizedPath.length > 0 ? (
+            <div ref={mapContainerRef} style={{ width: "100%", height: "100%" }} />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-gray-400 text-sm font-bold">
+              이동 경로 데이터가 없습니다.
+            </div>
+          )}
         </div>
 
-        {/* 통계 정보 */}
         <div className="flex-1 space-y-4">
           {[
             { label: '총 거리', value: distance.toFixed(2), unit: 'km' },
@@ -74,7 +131,7 @@ export function Summary() {
 
         <div className="pb-12">
           <button
-            onClick={() => navigate("/home")}
+            onClick={() => navigate(isViewMode ? "/history" : "/home")}
             className="w-full h-18 py-5 bg-black text-white rounded-2xl text-xl font-black transition-transform active:scale-[0.98]"
           >
             확인

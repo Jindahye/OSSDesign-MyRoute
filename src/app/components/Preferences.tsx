@@ -1,11 +1,10 @@
 import { useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-
 export function Preferences() {
   const navigate = useNavigate();
   const [preferences, setPreferences] = useState({ slope: false, wheeled: false, walking: false, running: false });
+  const [saving, setSaving] = useState(false);
 
-  // 컴포넌트 마운트 시 기존에 설정된 취향 데이터 로드
   useEffect(() => {
     const savedPref = localStorage.getItem("userPreferences");
     if (savedPref) {
@@ -13,54 +12,74 @@ export function Preferences() {
     }
   }, []);
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     const currentUser = localStorage.getItem("user");
     const tempUser = localStorage.getItem("temp_user");
 
-    // 1. 기존 가입 사용자 (마이페이지를 통한 접근)
     if (currentUser) {
-      localStorage.setItem("userPreferences", JSON.stringify(preferences));
-      alert("취향 설정이 성공적으로 변경되었습니다.");
-      navigate("/mypage");
+      const parsedUser = JSON.parse(currentUser);
+      const kakaoId = parsedUser.kakao_id ?? parsedUser.id;
+
+      setSaving(true);
+      try {
+        const res = await fetch('/api/auth/profile', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ kakaoId, preferences }),
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          alert(data.message || '취향 설정 변경에 실패했습니다.');
+          return;
+        }
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("userPreferences", JSON.stringify(preferences));
+        alert(data.message);
+        navigate("/mypage");
+      } catch {
+        alert("서버 오류로 인해 취향 설정 변경에 실패했습니다.");
+      } finally {
+        setSaving(false);
+      }
       return;
     }
 
-    // 2. 신규 가입 사용자 (초기 가입 프로세스를 통한 접근)
     if (tempUser) {
       const parsedUser = JSON.parse(tempUser);
 
-      // 백엔드의 회원가입 엔드포인트(/api/auth/signup)로 가입 데이터 전송
+      setSaving(true);
       fetch('/api/auth/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           kakaoId: parsedUser.id,
           nickname: parsedUser.nickname,
           profileImage: parsedUser.profileImage,
-          preferences: preferences 
+          preferences,
         }),
       })
-      .then((res) => res.json())
-      .then((data) => {
-        alert(data.message); 
-        
-        // 정식 세션 생성 및 선택된 취향 데이터 로컬 스토리지 보관
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("userPreferences", JSON.stringify(preferences));
-        localStorage.removeItem("temp_user"); 
-        
-        navigate("/home"); 
-      })
-      .catch((error) => {
-        console.error("회원가입 요청 중 통신 에러 발생:", error);
-        alert("회원가입 처리 중 오류가 발생했습니다.");
-      });
+        .then(async (res) => {
+          const data = await res.json();
+          if (!res.ok) throw new Error(data.message);
+          return data;
+        })
+        .then((data) => {
+          alert(data.message);
+          localStorage.setItem("user", JSON.stringify(data.user));
+          localStorage.setItem("userPreferences", JSON.stringify(preferences));
+          localStorage.removeItem("temp_user");
+          navigate("/home");
+        })
+        .catch((error) => {
+          console.error("회원가입 요청 중 통신 에러 발생:", error);
+          alert("서버 오류로 인해 회원 등록에 실패했습니다.");
+        })
+        .finally(() => setSaving(false));
       return;
     }
 
-    // 3. 인증 정보가 없는 비정상 접근 시
     alert("인증 정보가 만료되었습니다. 다시 로그인 해주세요.");
     navigate("/");
   };
@@ -79,7 +98,7 @@ export function Preferences() {
             { id: 'walking', label: '여유로운 걷기 선호' },
             { id: 'running', label: '활동적인 러닝 선호' },
           ].map((item) => (
-            <div 
+            <div
               key={item.id}
               onClick={() => setPreferences(prev => ({ ...prev, [item.id]: !prev[item.id as keyof typeof preferences] }))}
               className={`flex items-center justify-between p-5 rounded-2xl border-2 transition-all cursor-pointer ${preferences[item.id as keyof typeof preferences] ? 'border-black bg-white' : 'border-gray-50 bg-gray-50'}`}
@@ -92,7 +111,13 @@ export function Preferences() {
           ))}
         </div>
         <div className="pb-12">
-          <button onClick={handleComplete} className="w-full h-16 bg-black text-white rounded-2xl text-xl font-bold shadow-lg active:scale-[0.98] transition-transform">설정 완료</button>
+          <button
+            onClick={handleComplete}
+            disabled={saving}
+            className="w-full h-16 bg-black text-white rounded-2xl text-xl font-bold shadow-lg active:scale-[0.98] transition-transform disabled:opacity-50"
+          >
+            {saving ? '저장 중...' : '설정 완료'}
+          </button>
         </div>
       </div>
     </div>

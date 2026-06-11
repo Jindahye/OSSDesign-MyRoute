@@ -5,6 +5,7 @@ const cors = require('cors');
 const sqlite3 = require('sqlite3'); 
 const { open } = require('sqlite'); 
 const authRoutes = require('./routes/auth');
+const routeRoutes = require('./routes/routes');
 
 dotenv.config();
 
@@ -40,6 +41,33 @@ let db;
             )
         `);
         console.log("users 회원 테이블 생성/검증 완료");
+
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS walk_histories (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                kakao_id TEXT NOT NULL,
+                distance REAL NOT NULL,
+                time INTEGER NOT NULL,
+                path TEXT,
+                walk_type TEXT DEFAULT 'guided',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (kakao_id) REFERENCES users(kakao_id)
+            )
+        `);
+
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS issue_reports (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                kakao_id TEXT NOT NULL,
+                issue_type TEXT NOT NULL,
+                description TEXT,
+                latitude REAL NOT NULL,
+                longitude REAL NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (kakao_id) REFERENCES users(kakao_id)
+            )
+        `);
+        console.log("walk_histories, issue_reports 테이블 생성/검증 완료");
         
         app.set('db', db); 
 
@@ -50,6 +78,8 @@ let db;
 
 // 라우터 연결
 app.use('/api/auth', authRoutes);
+app.use('/api/routes', routeRoutes);
+app.use('/api/reports', routeRoutes);
 
 app.get('/', (req, res) => {
     res.send('MyRoute 백엔드 서버가 정상 작동 중입니다.');

@@ -1,28 +1,35 @@
 import { useNavigate } from "react-router";
-import { useState } from "react"; 
+import { useState } from "react";
 
 export function SignUp() {
   const navigate = useNavigate();
-  // 사용자가 입력한 닉네임 문자열을 관리하는 컴포넌트 로컬 상태
-  const [nickname, setNickname] = useState(""); 
+  const [nickname, setNickname] = useState("");
+  const [error, setError] = useState("");
 
   const handleNext = () => {
-    // 입력값 유효성 검사 (공백 문자 제거 후 검증)
-    if (!nickname.trim()) {
-      alert("닉네임을 입력해 주세요!");
+    const trimmed = nickname.trim();
+
+    if (!trimmed) {
+      setError("닉네임을 입력해 주세요.");
       return;
     }
 
-    // localStorage에 저장된 임시 사용자 데이터를 읽어와서 입력된 닉네임 필드를 병합
-    const tempUser = localStorage.getItem("temp_user");
-    if (tempUser) {
-      const parsed = JSON.parse(tempUser);
-      parsed.nickname = nickname; // 닉네임 업데이트
-      localStorage.setItem("temp_user", JSON.stringify(parsed)); // 세션 상태 최신화
+    if (!/^[가-힣a-zA-Z0-9]{2,12}$/.test(trimmed)) {
+      setError("닉네임은 2~12자의 한글, 영문, 숫자만 사용할 수 있습니다.");
+      return;
     }
 
-    // 다음 온보딩 단계인 취향 설정 페이지로 라우팅
-    navigate("/preferences"); 
+    const tempUser = localStorage.getItem("temp_user");
+    if (!tempUser) {
+      alert("인증 정보가 만료되었습니다. 다시 로그인해 주세요.");
+      navigate("/");
+      return;
+    }
+
+    const parsed = JSON.parse(tempUser);
+    parsed.nickname = trimmed;
+    localStorage.setItem("temp_user", JSON.stringify(parsed));
+    navigate("/preferences");
   };
 
   return (
@@ -35,17 +42,21 @@ export function SignUp() {
           <input
             type="text"
             placeholder="닉네임을 입력해주세요"
-            value={nickname} // 입력 필드의 값은 컴포넌트 상태(nickname)와 양방향 바인딩
-            onChange={(e) => setNickname(e.target.value)} // 사용자가 입력할 때마다 상태 업데이트
+            value={nickname}
+            onChange={(e) => {
+              setNickname(e.target.value);
+              setError("");
+            }}
             className="w-full h-16 border-2 border-gray-100 rounded-2xl px-5 bg-gray-50 outline-none focus:border-black transition-all"
           />
+          {error && <p className="text-red-500 text-sm font-bold mt-2 px-1">{error}</p>}
         </div>
         <div className="pb-12 space-y-6">
           <p className="text-center text-xs text-gray-400">
             '시작하기'를 누르면 MyRoute의 <span className="underline">이용약관</span> 및 <span className="underline">개인정보 처리방침</span>에 동의하는 것으로 간주합니다.
           </p>
           <button
-            onClick={handleNext} 
+            onClick={handleNext}
             className="w-full h-16 bg-black text-white rounded-2xl text-xl font-bold transition-all active:scale-[0.98]"
           >
             시작하기

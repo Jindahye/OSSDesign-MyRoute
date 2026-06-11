@@ -107,4 +107,43 @@ router.post('/signup', async (req, res) => {
     }
 });
 
+/**
+ * @route PUT /api/auth/profile
+ * @desc 기존 회원의 산책 취향 설정 갱신
+ */
+router.put('/profile', async (req, res) => {
+    const db = req.app.get('db');
+    const { kakaoId, preferences } = req.body;
+
+    if (!kakaoId || !preferences) {
+        return res.status(400).json({ message: '필수 파라미터가 누락되었습니다.' });
+    }
+
+    try {
+        const slope = preferences.slope ? 1 : 0;
+        const wheeled = preferences.wheeled ? 1 : 0;
+        const walking = preferences.walking ? 1 : 0;
+        const running = preferences.running ? 1 : 0;
+
+        const result = await db.run(
+            `UPDATE users SET slope = ?, wheeled = ?, walking = ?, running = ?
+             WHERE kakao_id = ?`,
+            [slope, wheeled, walking, running, kakaoId]
+        );
+
+        if (result.changes === 0) {
+            return res.status(404).json({ message: '사용자를 찾을 수 없습니다.' });
+        }
+
+        const updatedUser = await db.get('SELECT * FROM users WHERE kakao_id = ?', [kakaoId]);
+        res.json({
+            message: '취향 설정이 성공적으로 변경되었습니다.',
+            user: updatedUser,
+        });
+    } catch (error) {
+        console.error('프로필 수정 중 에러:', error);
+        res.status(500).json({ message: '프로필 수정 중 서버 오류가 발생했습니다.' });
+    }
+});
+
 module.exports = router;

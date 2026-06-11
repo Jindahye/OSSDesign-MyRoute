@@ -1,44 +1,56 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router";
+import { syncPreferencesFromUser } from "../utils/auth";
 
 export function KakaoCallback() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
+  const error = searchParams.get("error");
 
   useEffect(() => {
-    if (code) {
-      // 백엔드의 카카오 인증 엔드포인트로 인가 코드 전송 (HTTP POST)
-      fetch('/api/auth/kakao', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ code: code }),
+    if (error) {
+      alert("인증 서버와의 통신이 원활하지 않습니다.");
+      navigate("/", { replace: true });
+      return;
+    }
+
+    if (!code) {
+      alert("인증 코드를 받지 못했습니다. 다시 로그인해 주세요.");
+      navigate("/", { replace: true });
+      return;
+    }
+
+    fetch('/api/auth/kakao', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.message || '인증 실패');
+        }
+        return data;
       })
-      .then((res) => res.json())
       .then((data) => {
         if (data.isNewUser) {
-          // [신규 사용자] 회원가입 완료 전까지 카카오 프로필 데이터를 localStorage의 임시 키(temp_user)에 저장
           localStorage.setItem("temp_user", JSON.stringify(data.user));
           alert(data.message);
-          // 회원가입(닉네임 설정) 프리셋 페이지로 클라이언트 사이드 라우팅 수행
-          navigate("/signup"); 
+          navigate("/signup");
         } else {
-          // [기존 사용자] 세션 유지를 위해 인증된 사용자 객체를 localStorage의 정식 키(user)에 저장
           localStorage.setItem("user", JSON.stringify(data.user));
+          syncPreferencesFromUser(data.user);
           alert(data.message);
-          // 메인 애플리케이션 홈 화면으로 라우팅 수행
-          navigate("/home"); 
+          navigate("/home");
         }
       })
-      .catch((error) => {
-        console.error("HTTP 통신 중 예외 발생:", error);
-        alert("서버와의 연결이 원활하지 않습니다.");
-        navigate("/"); 
+      .catch((err) => {
+        console.error("HTTP 통신 중 예외 발생:", err);
+        alert("인증 서버와의 통신이 원활하지 않습니다.");
+        navigate("/", { replace: true });
       });
-    }
-  }, [code, navigate]);
+  }, [code, error, navigate]);
 
   return (
     <div className="flex h-screen flex-col items-center justify-center bg-white font-sans">
