@@ -7,7 +7,6 @@ export function Navigation() {
   const navigate = useNavigate();
   const { state } = useLocation();
   
-  // DOM 참조 (Ref) 및 지도 인스턴스 참조 관리
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const userMarkerRef = useRef<any>(null);
@@ -91,7 +90,7 @@ export function Navigation() {
       let lastValidPos: any = null;
       let weakSignalTimer: ReturnType<typeof setTimeout> | null = null;
 
-      // GPS Tracking: watchPosition을 통한 실시간 위치 구독 (Subscription)
+      // GPS 위치 추적 및 실시간 업데이트
       const watchId = navigator.geolocation.watchPosition(
         (pos) => {
           const { latitude, longitude } = pos.coords;
@@ -106,7 +105,7 @@ export function Navigation() {
           marker.setPosition(currentPos);
           map.panTo(currentPos);
 
-          // Path State 업데이트 및 거리 연산 함수 호출
+          // 실시간 경로 업데이트: 기존 경로에 현재 위치 추가 및 거리 재계산
           setPath(prevPath => {
             const newPath = [...prevPath, currentPos];
             polyline.setPath(newPath);
@@ -117,12 +116,11 @@ export function Navigation() {
         (err) => {
           console.error("GPS Signal Timeout / Permission Denied", err);
           setGpsWeak(true);
-          setManualMode(true); // 권한 거부 시 예외 처리(Exception Handling) UI 활성화
+          setManualMode(true); 
         },
         { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 }
       );
 
-      // Cleanup Function: 컴포넌트 언마운트 시 옵저버 패턴 해제
       return () => {
         navigator.geolocation.clearWatch(watchId);
         if (weakSignalTimer) clearTimeout(weakSignalTimer);
@@ -130,7 +128,7 @@ export function Navigation() {
     });
   }, [state?.destCoords]);
 
-  // Session Termination 및 데이터 직렬화 (Serialization)
+
   const handleEndWalk = () => {
     const serializedPath = path
       .map(toLatLngPoint)

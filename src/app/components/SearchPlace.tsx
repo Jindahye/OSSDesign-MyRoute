@@ -32,7 +32,7 @@ export function SearchPlace() {
     // 2. HTTP GET Request: Open API 연동 (교통약자 무장애 인프라 데이터 셋)
     const fetchPublicData = async () => {
       try {
-        const API_KEY = "발급받으신_실제_인증키를_여기에_넣으세요"; 
+        const API_KEY = import.meta.env.VITE_PUBLIC_API_KEY;
         const Endpoint_URL = `https://apis.data.go.kr/3450000/SeoGuDisabledPersonService/getSeoGuDisabledPersonList?serviceKey=${API_KEY}&numOfRows=100&pageNo=1&type=json`;
 
         const response = await fetch(Endpoint_URL);

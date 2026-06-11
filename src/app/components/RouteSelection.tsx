@@ -23,6 +23,7 @@ export function RouteSelection() {
   const [selected, setSelected] = useState(0);
   const [loading, setLoading] = useState(true);
   const [isFilterActive, setIsFilterActive] = useState(false);
+  const [permissionError, setPermissionError] = useState(false); // 권한 거부 상태 관리
 
   const destinationName = location.state?.destination || "목적지 미설정";
   const preLoadedCoords = location.state?.destCoords;
@@ -31,7 +32,6 @@ export function RouteSelection() {
     if (!window.kakao?.maps) return;
 
     window.kakao.maps.load(() => {
-      // 1. 현재 사용자 GPS 위치 획득 (출발지)
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
           (pos) => {
@@ -39,7 +39,9 @@ export function RouteSelection() {
             setupMap(startLatLng);
           },
           () => {
-            // 위치 권한 거부 시 경산 인근 고정 좌표 사용
+            // 위치 권한 거부 시 예외 처리 및 UI 상태 업데이트
+            setPermissionError(true);
+            setLoading(false);
             setupMap(new window.kakao.maps.LatLng(35.8906, 128.8525));
           }
         );
@@ -53,7 +55,6 @@ export function RouteSelection() {
           level: 4,
         });
 
-        // 출발지 마커
         new window.kakao.maps.Marker({ position: startLatLng, map, title: "출발지" });
 
         const processDestination = (destPos: any) => {
@@ -65,7 +66,7 @@ export function RouteSelection() {
           bounds.extend(destPos);
           map.setBounds(bounds);
 
-          // 2. 정확한 직선 거리 측정 (미터 단위)
+          //  직선 거리 측정 
           const line = new window.kakao.maps.Polyline({ path: [startLatLng, destPos] });
           const straightMeter = line.getLength(); 
           
@@ -88,7 +89,7 @@ export function RouteSelection() {
     });
   }, [destinationName, preLoadedCoords]);
 
-  // 3. 거리 기반 동적 경로 연산 로직 (가상 시뮬레이션)
+  // 경로 시뮬레이션 계산 함수: 직선 거리 기반으로 안전 필터 적용 여부 및 예상 시간/거리 산출
   const calculateSimulation = (straightMeter: number) => {
     setTimeout(() => {
       const savedPref = localStorage.getItem("userPreferences");
@@ -96,7 +97,7 @@ export function RouteSelection() {
       const active = prefs.wheeled || prefs.slope;
       setIsFilterActive(active);
 
-      const estimatedMeter = straightMeter * 1.3; // 우회 거리 감안
+      const estimatedMeter = straightMeter * 1.3;
       const calcDistanceKm = Number((estimatedMeter / 1000).toFixed(2));
       const calcDurationMin = Math.max(1, active ? Math.ceil(estimatedMeter / 50) : Math.ceil(estimatedMeter / 67));
 
@@ -132,7 +133,17 @@ export function RouteSelection() {
           </div>
           <h1 className="text-3xl font-black mb-4">{destinationName}</h1>
           
-          {!loading && (
+          {/* 위치 권한 오류 UI */}
+          {permissionError && (
+            <div className="mb-6 p-6 bg-red-50 border-2 border-red-200 rounded-[32px] text-center shadow-sm">
+              <AlertCircle className="w-10 h-10 text-red-500 mx-auto mb-2" />
+              <h3 className="font-black text-red-800 text-lg">위치 권한이 필요합니다</h3>
+              <p className="text-xs text-red-600 mt-1 mb-4">현재 위치를 불러올 수 없습니다. 권한 허용 후 새로고침해주세요.</p>
+              <button onClick={() => window.location.reload()} className="bg-red-500 text-white px-4 py-2 rounded-xl font-bold text-sm">새로고침</button>
+            </div>
+          )}
+
+          {!loading && !permissionError && (
             <div className={`mb-4 px-4 py-2 border text-xs font-bold rounded-xl flex items-center gap-2 ${isFilterActive ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-gray-50 border-gray-200 text-gray-600'}`}>
               {isFilterActive ? <ShieldCheck className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
               {isFilterActive ? "교통약자 안전 필터 적용 완료" : "안전 필터 미작동 (설정 확인 필요)"}
