@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router";
-import { User, Settings, Bell, ChevronRight, LogOut, Heart } from "lucide-react";
+import { User, ChevronRight, LogOut, Heart } from "lucide-react";
 import { useState, useEffect } from "react"; 
 
 export function MyPage() {
@@ -41,21 +41,7 @@ export function MyPage() {
       icon: <Heart className="w-5 h-5" />, 
       path: "/preferences",
       value: prefTitle // 현재 설정된 취향 데이터 바인딩
-    },
-    { 
-      id: "noti", 
-      label: "알림 설정", 
-      icon: <Bell className="w-5 h-5" />, 
-      path: "/mypage",
-      value: null
-    },
-    { 
-      id: "settings", 
-      label: "서비스 설정", 
-      icon: <Settings className="w-5 h-5" />, 
-      path: "/mypage",
-      value: null
-    },
+    }
   ];
 
   // 세션 종료(로그아웃) 핸들러
