@@ -66,7 +66,6 @@ export function RouteSelection() {
           bounds.extend(destPos);
           map.setBounds(bounds);
 
-          //  직선 거리 측정 
           const line = new window.kakao.maps.Polyline({ path: [startLatLng, destPos] });
           const straightMeter = line.getLength(); 
           
@@ -89,7 +88,7 @@ export function RouteSelection() {
     });
   }, [destinationName, preLoadedCoords]);
 
-  // 경로 시뮬레이션 계산 함수: 직선 거리 기반으로 안전 필터 적용 여부 및 예상 시간/거리 산출
+// 시뮬레이션: 경로 분석 및 안전 점수 계산 
   const calculateSimulation = (straightMeter: number) => {
     setTimeout(() => {
       const savedPref = localStorage.getItem("userPreferences");
@@ -110,7 +109,7 @@ export function RouteSelection() {
         safetyScore: active ? 95 : 75,
       }]);
       setLoading(false);
-    }, 600);
+    }, 100);
   };
 
   const handleStartWalk = () => {
